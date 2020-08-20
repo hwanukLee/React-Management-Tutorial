@@ -30,5 +30,5 @@ class CustomerInfo extends React.Component{
         </div>
     }
 }
-
+ 
 export default Customer;
