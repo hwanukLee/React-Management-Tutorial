@@ -23,6 +23,9 @@ const connection = mysql.createConnection({
 
 connection.connect();
 
+const multer = require('multer');
+const upload = multer({dest: './upload'})
+
 app.get('/api/customers', (req, res) => {
     connection.query(
         "SELECT * FROM CUSTOMER",
@@ -32,38 +35,30 @@ app.get('/api/customers', (req, res) => {
     );
 } );
 
-/* app.get('/api/customers', (req, res) => {
-    res.send([
-        {
-            'id': 1,
-            'image': 'https://placeimg.com/64/64/1',
-            'name': '이예송',
-            'birthday': '1973',
-            'gender': '남자',
-            'job': '직장인'
-          },
-          {
-            'id': 2,
-            'image': 'https://placeimg.com/64/64/2',
-            'name': '이지백',
-            'birthday': '1973',
-            'gender': '남자',
-            'job': '디자이너'
-          },
-          {
-            'id': 3,
-            'image': 'https://placeimg.com/64/64/3',
-            'name': '이대율',
-            'birthday': '1973',
-            'gender': '남자',
-            'job': '개발자'
-          }
-    ]);
-}); */
+app.use('./image', express.static('./upload'));
 
-/* app.get('/api/hello', (req, res) => {
-    res.send({message: 'Hello Express!'});
-});  */
+app.post('/api/customers', upload.single('image'), (req, res) => {
+    let sql ='INSERT INTO CUSTOMER VALUES(null, ?,?,?,?,?)';
+    let image ='/image' + req.file.filename;
+    let name = req.body.name;
+    let birthday = req.body.birthday;
+    let gender = req.body.gender;
+    
+    console.log(image);
+    console.log(name);
+    console.log(birthday);
+    console.log(gender);
+    console.log(job);
+
+    let params = [image, name, birthday, gender, job];
+    connection.query(sql, params, 
+        (err, rows, fields) => {
+            res.send(rows);
+            console.log(err);
+            console.log(sql);
+        }
+    );
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
